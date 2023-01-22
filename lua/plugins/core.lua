@@ -1,34 +1,10 @@
--- since this is just an example spec, don't actually load anything here and return an empty spec
--- stylua: ignore
-if true then return {} end
-
--- every spec file under config.plugins will be loaded automatically by lazy.nvim
---
--- In your plugin files, you can:
--- * add extra plugins
--- * disable/enabled LazyVim plugins
--- * override the configuration of LazyVim plugins
 return {
-  -- add gruvbox
-  { "ellisonleao/gruvbox.nvim" },
-
-  -- Configure LazyVim to load gruvbox
-  {
-    "LazyVim/LazyVim",
-    opts = {
-      colorscheme = "gruvbox",
-    },
-  },
-
   -- change trouble config
   {
     "folke/trouble.nvim",
-    -- opts will be merged with the parent spec
+    --  use the signs defined in your lsp client
     opts = { use_diagnostic_signs = true },
   },
-
-  -- disable trouble
-  { "folke/trouble.nvim", enabled = false },
 
   -- add symbols-outline
   {
@@ -52,14 +28,24 @@ return {
   -- change some telescope options and a keymap to browse plugin files
   {
     "nvim-telescope/telescope.nvim",
+    dependencies = { { "nvim-telescope/telescope-file-browser.nvim"} },
     keys = {
-      -- add a keymap to browse plugin files
       -- stylua: ignore
       {
-        "<leader>fp",
-        function() require("telescope.builtin").find_files({ cwd = require("lazy.core.config").options.root }) end,
-        desc = "Find Plugin File",
+        "<leader>ff",
+        function() require("telescope.builtin").find_files({ }) end,
+        desc = "Find File",
       },
+      {
+        "<leader>fg",
+        function() require("telescope.builtin").live_grep({ }) end,
+        desc = "Live Grep",
+      },
+      {
+        "<leader>fb",
+        function() require("telescope.extensions.file_browser").file_browser({ }) end,
+        desc = "Browse Files",
+      }
     },
     -- change some options
     opts = {
@@ -68,6 +54,16 @@ return {
         layout_config = { prompt_position = "top" },
         sorting_strategy = "ascending",
         winblend = 0,
+        vimgrep_arguments = {
+          "rg",
+          "--color=never",
+          "--no-heading",
+          "--with-filename",
+          "--line-number",
+          "--column",
+          "--smart-case",
+          "--trim" 
+        },
       },
     },
   },
@@ -81,6 +77,7 @@ return {
       local telescope = require("telescope")
       telescope.setup(opts)
       telescope.load_extension("fzf")
+      telescope.load_extension("file_browser")
     end,
   },
 
@@ -100,16 +97,6 @@ return {
   -- add tsserver and setup with typescript.nvim instead of lspconfig
   {
     "neovim/nvim-lspconfig",
-    dependencies = {
-      "jose-elias-alvarez/typescript.nvim",
-      init = function()
-        require("lazyvim.util").on_attach(function(_, buffer)
-          -- stylua: ignore
-          vim.keymap.set( "n", "<leader>co", "TypescriptOrganizeImports", { buffer = buffer, desc = "Organize Imports" })
-          vim.keymap.set("n", "<leader>cR", "TypescriptRenameFile", { desc = "Rename File", buffer = buffer })
-        end)
-      end,
-    },
     ---@class PluginLspOpts
     opts = {
       ---@type lspconfig.options
@@ -142,7 +129,6 @@ return {
     opts = {
       ensure_installed = {
         "bash",
-        "help",
         "html",
         "javascript",
         "json",
@@ -152,9 +138,6 @@ return {
         "python",
         "query",
         "regex",
-        "tsx",
-        "typescript",
-        "vim",
         "yaml",
       },
     },
@@ -169,30 +152,9 @@ return {
       vim.list_extend(opts.ensure_installed, {
         -- add tsx and treesitter
         ensure_installed = {
-          "tsx",
-          "typescript",
+          "rust",
         },
       })
-    end,
-  },
-
-  -- the opts function can also be used to change the default opts:
-  {
-    "nvim-lualine/lualine.nvim",
-    event = "VeryLazy",
-    opts = function(_, opts)
-      table.insert(opts.sections.lualine_x, "😄")
-    end,
-  },
-
-  -- or you can return new options to override all the defaults
-  {
-    "nvim-lualine/lualine.nvim",
-    event = "VeryLazy",
-    opts = function()
-      return {
-        --[[add your custom lualine config here]]
-      }
     end,
   },
 
@@ -207,7 +169,6 @@ return {
     "williamboman/mason.nvim",
     opts = {
       ensure_installed = {
-        "stylua",
         "shellcheck",
         "shfmt",
         "flake8",
