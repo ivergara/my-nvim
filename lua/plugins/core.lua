@@ -28,7 +28,6 @@ return {
   -- change some telescope options and a keymap to browse plugin files
   {
     "nvim-telescope/telescope.nvim",
-    dependencies = { { "nvim-telescope/telescope-file-browser.nvim"} },
     keys = {
       -- stylua: ignore
       {
@@ -41,11 +40,6 @@ return {
         function() require("telescope.builtin").live_grep({ }) end,
         desc = "Live Grep",
       },
-      {
-        "<leader>fb",
-        function() require("telescope.extensions.file_browser").file_browser({ }) end,
-        desc = "Browse Files",
-      }
     },
     -- change some options
     opts = {
@@ -77,8 +71,25 @@ return {
       local telescope = require("telescope")
       telescope.setup(opts)
       telescope.load_extension("fzf")
+    end,
+  },
+
+-- add telescope-file-browser
+  {
+    "nvim-telescope/telescope.nvim",
+    dependencies = { { "nvim-telescope/telescope-file-browser.nvim"} },
+    config = function(_, opts)
+      local telescope = require("telescope")
+      telescope.setup(opts)
       telescope.load_extension("file_browser")
     end,
+    keys = {
+      {
+        "<leader>fb",
+        function() require("telescope").extensions.file_browser.file_browser({ }) end,
+        desc = "Browse Files",
+      },
+    },
   },
 
   -- add pyright to lspconfig
@@ -94,34 +105,6 @@ return {
     },
   },
 
-  -- add tsserver and setup with typescript.nvim instead of lspconfig
-  {
-    "neovim/nvim-lspconfig",
-    ---@class PluginLspOpts
-    opts = {
-      ---@type lspconfig.options
-      servers = {
-        -- tsserver will be automatically installed with mason and loaded with lspconfig
-        tsserver = {},
-      },
-      -- you can do any additional lsp server setup here
-      -- return true if you don't want this server to be setup with lspconfig
-      ---@type table<string, fun(server:string, opts:_.lspconfig.options):boolean?>
-      setup = {
-        -- example to setup with typescript.nvim
-        tsserver = function(_, opts)
-          require("typescript").setup({ server = opts })
-          return true
-        end,
-        -- Specify * to use this function as a fallback for any server
-        -- ["*"] = function(server, opts) end,
-      },
-    },
-  },
-
-  -- for typescript, LazyVim also includes extra specs to properly setup lspconfig,
-  -- treesitter, mason and typescript.nvim. So instead of the above, you can use:
-  { import = "lazyvim.plugins.extras.lang.typescript" },
 
   -- add more treesitter parsers
   {
@@ -130,7 +113,6 @@ return {
       ensure_installed = {
         "bash",
         "html",
-        "javascript",
         "json",
         "lua",
         "markdown",
@@ -139,27 +121,15 @@ return {
         "query",
         "regex",
         "yaml",
+        "rust",
+        "toml",
       },
     },
   },
 
-  -- since `vim.tbl_deep_extend`, can only merge tables and not lists, the code above
-  -- would overwrite `ensure_installed` with the new value.
-  -- If you'd rather extend the default config, use the code below instead:
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = function(_, opts)
-      vim.list_extend(opts.ensure_installed, {
-        -- add tsx and treesitter
-        ensure_installed = {
-          "rust",
-        },
-      })
-    end,
-  },
 
   -- use mini.starter instead of alpha
-  { import = "lazyvim.plugins.extras.ui.mini-starter" },
+  -- { import = "lazyvim.plugins.extras.ui.mini-starter" },
 
   -- add jsonls and schemastore ans setup treesitter for json, json5 and jsonc
   { import = "lazyvim.plugins.extras.lang.json" },
@@ -171,7 +141,7 @@ return {
       ensure_installed = {
         "shellcheck",
         "shfmt",
-        "flake8",
+        -- "flake8",
       },
     },
   },
@@ -228,3 +198,4 @@ return {
     end,
   },
 }
+
