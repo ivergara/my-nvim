@@ -25,22 +25,8 @@ return {
     end,
   },
 
-  -- change some telescope options and a keymap to browse plugin files
   {
     "nvim-telescope/telescope.nvim",
-    keys = {
-      -- stylua: ignore
-      {
-        "<leader>ff",
-        function() require("telescope.builtin").find_files({ }) end,
-        desc = "Find File",
-      },
-      {
-        "<leader>fg",
-        function() require("telescope.builtin").live_grep({ }) end,
-        desc = "Live Grep",
-      },
-    },
     -- change some options
     opts = {
       defaults = {
@@ -85,7 +71,7 @@ return {
     end,
     keys = {
       {
-        "<leader>fb",
+        "<leader>fn",
         function() require("telescope").extensions.file_browser.file_browser({ }) end,
         desc = "Browse Files",
       },
@@ -126,7 +112,6 @@ return {
       },
     },
   },
-
 
   -- use mini.starter instead of alpha
   -- { import = "lazyvim.plugins.extras.ui.mini-starter" },
