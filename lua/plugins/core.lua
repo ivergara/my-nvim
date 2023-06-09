@@ -12,6 +12,9 @@ return {
     cmd = "SymbolsOutline",
     keys = { { "<leader>cs", "<cmd>SymbolsOutline<cr>", desc = "Symbols Outline" } },
     config = true,
+    opts = {
+      auto_close = true
+    },
   },
 
   -- override nvim-cmp and add cmp-emoji
@@ -42,7 +45,7 @@ return {
           "--line-number",
           "--column",
           "--smart-case",
-          "--trim" 
+          "--trim"
         },
       },
     },
@@ -50,20 +53,20 @@ return {
 
   -- add telescope-fzf-native
   {
-    "nvim-telescope/telescope.nvim",
-    dependencies = { { "nvim-telescope/telescope-fzf-native.nvim", build = "make" } },
-    -- apply the config and additionally load fzf-native
-    config = function(_, opts)
-      local telescope = require("telescope")
-      telescope.setup(opts)
-      telescope.load_extension("fzf")
-    end,
+    "telescope.nvim",
+    dependencies = {
+      "nvim-telescope/telescope-fzf-native.nvim",
+      build = "make",
+      config = function()
+        require("telescope").load_extension("fzf")
+      end,
+    },
   },
 
--- add telescope-file-browser
+  -- add telescope-file-browser
   {
     "nvim-telescope/telescope.nvim",
-    dependencies = { { "nvim-telescope/telescope-file-browser.nvim"} },
+    dependencies = { { "nvim-telescope/telescope-file-browser.nvim" } },
     config = function(_, opts)
       local telescope = require("telescope")
       telescope.setup(opts)
@@ -72,7 +75,7 @@ return {
     keys = {
       {
         "<leader>fn",
-        function() require("telescope").extensions.file_browser.file_browser({ }) end,
+        function() require("telescope").extensions.file_browser.file_browser({}) end,
         desc = "Browse Files",
       },
     },
@@ -124,6 +127,7 @@ return {
     "williamboman/mason.nvim",
     opts = {
       ensure_installed = {
+        "pyright",
         "shellcheck",
         "shfmt",
         -- "flake8",
@@ -183,4 +187,3 @@ return {
     end,
   },
 }
-
